@@ -9,7 +9,7 @@ from itertools import combinations, product
 from sympy.core.basic import Basic, as_Basic
 from sympy.core.cache import cacheit
 from sympy.core.numbers import Number, oo
-from sympy.core.operations import LatticeOp
+from sympy.core.operations import AssocOp
 from sympy.core.function import Application, Derivative
 from sympy.core.compatibility import (ordered, range, with_metaclass,
     as_int, reduce)
@@ -492,7 +492,7 @@ class BooleanFunction(Application, Boolean):
             return S.Zero
 
 
-class And(LatticeOp, BooleanFunction):
+class And(AssocOp, BooleanFunction):
     """
     Logical AND function.
 
@@ -547,7 +547,7 @@ class And(LatticeOp, BooleanFunction):
         return Intersection(*[arg.as_set() for arg in self.args])
 
 
-class Or(LatticeOp, BooleanFunction):
+class Or(AssocOp, BooleanFunction):
     """
     Logical OR function
 
