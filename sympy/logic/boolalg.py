@@ -9,6 +9,8 @@ from sympy.core.basic import Basic
 from sympy.core.cache import cacheit
 from sympy.core.containers import Tuple
 from sympy.core.decorators import sympify_method_args, sympify_return
+from sympy.core.numbers import Number
+from sympy.core.operations import AssocOp
 from sympy.core.function import Application, Derivative
 from sympy.core.kind import BooleanKind, NumberKind
 from sympy.core.numbers import Number
@@ -569,7 +571,7 @@ class BooleanFunction(Application, Boolean):
             return S.Zero
 
 
-class And(LatticeOp, BooleanFunction):
+class And(AssocOp, BooleanFunction):
     """
     Logical AND function.
 
@@ -729,7 +731,7 @@ class And(LatticeOp, BooleanFunction):
         return self
 
 
-class Or(LatticeOp, BooleanFunction):
+class Or(AssocOp, BooleanFunction):
     """
     Logical OR function
 
