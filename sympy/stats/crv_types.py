@@ -47,7 +47,7 @@ from __future__ import print_function, division
 
 from sympy import (log, sqrt, pi, S, Dummy, Interval, sympify, gamma,
                    Piecewise, And, Eq, binomial, factorial, Sum, floor, Abs,
-                   Lambda, Basic, lowergamma, erf, erfi, erfc, I, hyper, uppergamma,
+                   Lambda, Basic, lowergamma, erf, erfi, I, hyper, uppergamma,
                    sinh, Ne)
 
 from sympy import beta as beta_fn
@@ -55,6 +55,8 @@ from sympy import cos, sin, exp, besseli, besselj
 from sympy.stats.crv import (SingleContinuousPSpace, SingleContinuousDistribution,
         ContinuousDistributionHandmade)
 from sympy.stats.rv import _value_check
+from sympy.matrices import MatrixBase
+from sympy.stats.joint_rv_types import multivariate_rv
 from sympy.external import import_module
 import random
 
@@ -1551,8 +1553,10 @@ def Laplace(name, mu, b):
     Parameters
     ==========
 
-    mu : Real number, the location (mean)
-    b : Real number, `b > 0`, a scale
+    mu : Real number or a list/matrix, the location (mean) or the
+        location vector
+    b : Real number or a positive definite matrix, representing a scale
+        or the covariance matrix.
 
     Returns
     =======
@@ -1563,7 +1567,7 @@ def Laplace(name, mu, b):
     ========
 
     >>> from sympy.stats import Laplace, density, cdf
-    >>> from sympy import Symbol
+    >>> from sympy import Symbol, pprint
 
     >>> mu = Symbol("mu")
     >>> b = Symbol("b", positive=True)
@@ -1578,12 +1582,25 @@ def Laplace(name, mu, b):
     Piecewise((exp((-mu + z)/b)/2, mu > z),
             (-exp((mu - z)/b)/2 + 1, True))
 
+    >>> L = Laplace('L', [1, 2], [[1, 0], [0, 1]])
+    >>> pprint(density(L)(1, 2), use_unicode=False)
+     5        /     ____\
+    e *besselk\0, \/ 35 /
+    ---------------------
+              pi
+
     References
     ==========
 
     .. [1] http://en.wikipedia.org/wiki/Laplace_distribution
     .. [2] http://mathworld.wolfram.com/LaplaceDistribution.html
     """
+
+    if isinstance(mu, (list, MatrixBase)) and\
+        isinstance(b, (list, MatrixBase)):
+        from sympy.stats.joint_rv_types import MultivariateLaplaceDistribution
+        return multivariate_rv(
+            MultivariateLaplaceDistribution, name, mu, b)
 
     return rv(name, LaplaceDistribution, (mu, b))
 
@@ -1929,8 +1946,9 @@ def Normal(name, mean, std):
     Parameters
     ==========
 
-    mu : Real number, the mean
-    sigma : Real number, :math:`\sigma^2 > 0` the variance
+    mu : Real number or a list representing the mean or the mean vector
+    sigma : Real number or a positive definite sqaure matrix,
+         :math:`\sigma^2 > 0` the variance
 
     Returns
     =======
@@ -1946,7 +1964,7 @@ def Normal(name, mean, std):
     >>> mu = Symbol("mu")
     >>> sigma = Symbol("sigma", positive=True)
     >>> z = Symbol("z")
-
+    >>> y = Symbol("y")
     >>> X = Normal("x", mu, sigma)
 
     >>> density(X)(z)
@@ -1974,6 +1992,21 @@ def Normal(name, mean, std):
     >>> simplify(std(2*X + 1))
     2
 
+    >>> m = Normal('X', [1, 2], [[2, 1], [1, 2]])
+    >>> from sympy.stats.joint_rv import marginal_distribution
+    >>> pprint(density(m)(y, z))
+              2          2
+             y    y*z   z
+           - -- + --- - -- + z - 1
+      ___    3     3    3
+    \/ 3 *e
+    ------------------------------
+                 6*pi
+
+    >>> marginal_distribution(m, m[0])(1)
+     1/(2*sqrt(pi))
+
+
     References
     ==========
 
@@ -1981,6 +2014,11 @@ def Normal(name, mean, std):
     .. [2] http://mathworld.wolfram.com/NormalDistributionFunction.html
     """
 
+    if isinstance(mean, (list, MatrixBase)) and\
+        isinstance(std, (list, MatrixBase)):
+        from sympy.stats.joint_rv_types import MultivariateNormalDistribution
+        return multivariate_rv(
+            MultivariateNormalDistribution, name, mean, std)
     return rv(name, NormalDistribution, (mean, std))
 
 #-------------------------------------------------------------------------------

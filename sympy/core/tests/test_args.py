@@ -446,6 +446,11 @@ def test_sympy__core__numbers__GoldenRatio():
     assert _test_args(GoldenRatio())
 
 
+def test_sympy__core__numbers__TribonacciConstant():
+    from sympy.core.numbers import TribonacciConstant
+    assert _test_args(TribonacciConstant())
+
+
 def test_sympy__core__numbers__Half():
     from sympy.core.numbers import Half
     assert _test_args(Half())
@@ -805,6 +810,14 @@ def test_sympy__stats__drv__ConditionalDiscreteDomain():
     X = SingleDiscreteDomain(x, S.Naturals0)
     assert _test_args(ConditionalDiscreteDomain(X, x > 2))
 
+def test_sympy__stats__joint_rv__JointPSpace():
+    from sympy.stats.joint_rv import JointPSpace, JointDistribution
+    assert _test_args(JointPSpace('X', JointDistribution(1)))
+
+def test_sympy__stats__joint_rv__JointRandomSymbol():
+    from sympy.stats.joint_rv import JointRandomSymbol
+    assert _test_args(JointRandomSymbol(x))
+
 @SKIP("abstract class")
 def test_sympy__stats__drv__SingleDiscreteDistribution():
     pass
@@ -855,12 +868,17 @@ def test_sympy__stats__rv__RandomSymbol():
     assert _test_args(RandomSymbol(x, A))
 
 
+@SKIP("abstract Class")
 def test_sympy__stats__rv__ProductPSpace():
-    from sympy.stats.rv import ProductPSpace
+    pass
+
+
+def test_sympy__stats__rv__IndependentProductPSpace():
+    from sympy.stats.rv import IndependentProductPSpace
     from sympy.stats.crv import SingleContinuousPSpace
     A = SingleContinuousPSpace(x, nd)
     B = SingleContinuousPSpace(y, nd)
-    assert _test_args(ProductPSpace(A, B))
+    assert _test_args(IndependentProductPSpace(A, B))
 
 
 def test_sympy__stats__rv__ProductDomain():
@@ -1180,13 +1198,60 @@ def test_sympy__stats__crv_types__WignerSemicircleDistribution():
     from sympy.stats.crv_types import WignerSemicircleDistribution
     assert _test_args(WignerSemicircleDistribution(1))
 
-def test_sympy__stats__drv_types__PoissonDistribution():
-    from sympy.stats.drv_types import PoissonDistribution
-    assert _test_args(PoissonDistribution(1))
 
 def test_sympy__stats__drv_types__GeometricDistribution():
     from sympy.stats.drv_types import GeometricDistribution
     assert _test_args(GeometricDistribution(.5))
+
+
+def test_sympy__stats__drv_types__LogarithmicDistribution():
+    from sympy.stats.drv_types import LogarithmicDistribution
+    assert _test_args(LogarithmicDistribution(.5))
+
+
+def test_sympy__stats__drv_types__NegativeBinomialDistribution():
+    from sympy.stats.drv_types import NegativeBinomialDistribution
+    assert _test_args(NegativeBinomialDistribution(.5, .5))
+
+
+def test_sympy__stats__drv_types__PoissonDistribution():
+    from sympy.stats.drv_types import PoissonDistribution
+    assert _test_args(PoissonDistribution(1))
+
+
+def test_sympy__stats__drv_types__YuleSimonDistribution():
+    from sympy.stats.drv_types import YuleSimonDistribution
+    assert _test_args(YuleSimonDistribution(.5))
+
+
+def test_sympy__stats__drv_types__ZetaDistribution():
+    from sympy.stats.drv_types import ZetaDistribution
+    assert _test_args(ZetaDistribution(1.5))
+
+
+def test_sympy__stats__joint_rv__JointDistribution():
+    from sympy.stats.joint_rv import JointDistribution
+    assert _test_args(JointDistribution(1, 2, 3, 4))
+
+
+def test_sympy__stats__joint_rv_types__MultivariateNormalDistribution():
+    from sympy.stats.joint_rv_types import MultivariateNormalDistribution
+    assert _test_args(MultivariateNormalDistribution([0, 1], [[1, 0],[0, 1]]))
+
+def test_sympy__stats__joint_rv_types__MultivariateLaplaceDistribution():
+    from sympy.stats.joint_rv_types import MultivariateLaplaceDistribution
+    assert _test_args(MultivariateLaplaceDistribution([0, 1], [[1, 0],[0, 1]]))
+
+
+def test_sympy__stats__joint_rv_types__MultivariateTDistribution():
+    from sympy.stats.joint_rv_types import MultivariateTDistribution
+    assert _test_args(MultivariateTDistribution([0, 1], [[1, 0],[0, 1]], 1))
+
+
+def test_sympy__stats__joint_rv_types__NormalGammaDistribution():
+    from sympy.stats.joint_rv_types import NormalGammaDistribution
+    assert _test_args(NormalGammaDistribution(1, 2, 3, 4))
+
 
 def test_sympy__core__symbol__Dummy():
     from sympy.core.symbol import Dummy
@@ -1271,6 +1336,11 @@ def test_sympy__functions__combinatorial__numbers__euler():
 def test_sympy__functions__combinatorial__numbers__fibonacci():
     from sympy.functions.combinatorial.numbers import fibonacci
     assert _test_args(fibonacci(x))
+
+
+def test_sympy__functions__combinatorial__numbers__tribonacci():
+    from sympy.functions.combinatorial.numbers import tribonacci
+    assert _test_args(tribonacci(x))
 
 
 def test_sympy__functions__combinatorial__numbers__harmonic():
@@ -1926,6 +1996,10 @@ def test_sympy__functions__special__hyper__HyperRep_sinasin():
     from sympy.functions.special.hyper import HyperRep_sinasin
     assert _test_args(HyperRep_sinasin(x, y))
 
+def test_sympy__functions__special__hyper__appellf1():
+    from sympy.functions.special.hyper import appellf1
+    a, b1, b2, c, x, y = symbols('a b1 b2 c x y')
+    assert _test_args(appellf1(a, b1, b2, c, x, y))
 
 @SKIP("abstract class")
 def test_sympy__functions__special__polynomials__OrthogonalPolynomial():

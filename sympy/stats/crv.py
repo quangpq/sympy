@@ -11,10 +11,9 @@ sympy.stats.frv
 from __future__ import print_function, division
 
 from sympy.stats.rv import (RandomDomain, SingleDomain, ConditionalDomain,
-        ProductDomain, PSpace, SinglePSpace, random_symbols, ProductPSpace,
-        NamedArgsMixin)
+        ProductDomain, PSpace, SinglePSpace, random_symbols, NamedArgsMixin)
 from sympy.functions.special.delta_functions import DiracDelta
-from sympy import (Interval, Intersection, symbols, sympify, Dummy, Mul,
+from sympy import (Interval, Intersection, symbols, sympify, Dummy,
         Integral, And, Or, Piecewise, cacheit, integrate, oo, Lambda,
         Basic, S, exp, I, FiniteSet, Ne, Eq, Union)
 from sympy.solvers.solveset import solveset
@@ -243,8 +242,8 @@ class SingleContinuousDistribution(ContinuousDistribution, NamedArgsMixin):
 
     def expectation(self, expr, var, evaluate=True, **kwargs):
         """ Expectation of expression over distribution """
-        integral = Integral(expr * self.pdf(var), (var, self.set), **kwargs)
-        return integral.doit() if evaluate else integral
+        integral = Integral(expr * self.pdf(var), (var, self.set))
+        return integral.doit(**kwargs) if evaluate else integral
 
 class ContinuousDistributionHandmade(SingleContinuousDistribution):
     _argnames = ('pdf',)
@@ -272,7 +271,7 @@ class ContinuousPSpace(PSpace):
     def pdf(self):
         return self.density(*self.domain.symbols)
 
-    def integrate(self, expr, rvs=None, **kwargs):
+    def integrate(self, expr, rvs=None, evaluate=False, **kwargs):
         if rvs is None:
             rvs = self.values
         else:
@@ -411,7 +410,7 @@ class SingleContinuousPSpace(ContinuousPSpace, SinglePSpace):
         """
         return {self.value: self.distribution.sample()}
 
-    def integrate(self, expr, rvs=None, **kwargs):
+    def integrate(self, expr, rvs=None, evaluate=False, **kwargs):
         rvs = rvs or (self.value,)
         if self.value not in rvs:
             return expr
@@ -420,7 +419,7 @@ class SingleContinuousPSpace(ContinuousPSpace, SinglePSpace):
 
         x = self.value.symbol
         try:
-            return self.distribution.expectation(expr, x, evaluate=False, **kwargs)
+            return self.distribution.expectation(expr, x, evaluate=evaluate, **kwargs)
         except Exception:
             return Integral(expr * self.pdf, (x, self.set), **kwargs)
 
