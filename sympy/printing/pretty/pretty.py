@@ -216,10 +216,10 @@ class PrettyPrinter(Printer):
         if self._use_unicode:
             arg = e.args[0]
             pform = self._print(arg)
-            if isinstance(arg, Equivalent):
-                return self._print_Equivalent(arg, altchar=u"\N{LEFT RIGHT DOUBLE ARROW WITH STROKE}")
-            if isinstance(arg, Implies):
-                return self._print_Implies(arg, altchar=u"\N{RIGHTWARDS ARROW WITH STROKE}")
+            # if isinstance(arg, Equivalent):
+            #     return self._print_Equivalent(arg, altchar=u"\N{LEFT RIGHT DOUBLE ARROW WITH STROKE}")
+            # if isinstance(arg, Implies):
+            #     return self._print_Implies(arg, altchar=u"\N{RIGHTWARDS ARROW WITH STROKE}")
 
             if arg.is_Boolean and not arg.is_Not:
                 pform = prettyForm(*pform.parens())
