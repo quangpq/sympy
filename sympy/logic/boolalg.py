@@ -598,8 +598,8 @@ class And(AssocOp, BooleanFunction):
     y
 
     """
-    zero = false
-    identity = true
+    zero = None
+    identity = None
 
     nargs = None
 
@@ -619,7 +619,7 @@ class And(AssocOp, BooleanFunction):
                 else:
                     rel.add(c)
             newargs.append(x)
-        return newargs
+        return AssocOp._new_args_filter(newargs, And)
 
     def _eval_subs(self, old, new):
         args = []
@@ -758,8 +758,8 @@ class Or(AssocOp, BooleanFunction):
     y
 
     """
-    zero = true
-    identity = false
+    zero = None
+    identity = None
 
     @classmethod
     def _new_args_filter(cls, args):
@@ -776,7 +776,7 @@ class Or(AssocOp, BooleanFunction):
                     return [S.true]
                 rel.append(c)
             newargs.append(x)
-        return LatticeOp._new_args_filter(newargs, Or)
+        return AssocOp._new_args_filter(newargs, Or)
 
     def _eval_subs(self, old, new):
         args = []
