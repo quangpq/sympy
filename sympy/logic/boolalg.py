@@ -890,8 +890,8 @@ class Not(BooleanFunction):
     def eval(cls, arg):
         if isinstance(arg, Number) or arg in (True, False):
             return false if arg else true
-        if arg.is_Not:
-            return arg.args[0]
+        # if arg.is_Not:
+        #     return arg.args[0]
         # Simplify Relational objects.
         if arg.is_Relational:
             return arg.negated
