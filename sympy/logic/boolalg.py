@@ -20,6 +20,7 @@ from sympy.core.sorting import ordered
 from sympy.core.sympify import _sympy_converter, _sympify, sympify
 from sympy.utilities.iterables import sift, ibin
 from sympy.utilities.misc import filldedent
+from sympy.utilities.iterables import sift
 
 
 def as_Boolean(e):
@@ -480,6 +481,31 @@ class BooleanFunction(Application, Boolean):
         from sympy.simplify.simplify import simplify
         return simplify(self, **kwargs)
 
+    def __hash__(self):
+        h = self._mhash
+        if h is None:
+            if self.func is Implies:
+                h = hash((type(self).__name__,) + self._hashable_content())
+            else:
+                h = hash((type(self).__name__, self._func_hashable_content()))
+            self._mhash = h
+        return h
+
+    def _func_hashable_content(self):
+        return frozenset(self._args)
+
+    def __eq__(self, other):
+        if type(self) is not type(other):
+            return False
+
+        if self is other:
+            return True
+
+        if self.func is Implies:
+            return self.args == other.args
+
+        return self.args.__len__() == other.args.__len__() and set(self.args) == set(other.args)
+
     def __lt__(self, other):
         raise TypeError(filldedent('''
             A Boolean argument can only be used in
@@ -570,8 +596,38 @@ class BooleanFunction(Application, Boolean):
         else:
             return S.Zero
 
+class BoolAssocOp(AssocOp):
+    def _has_matcher(self):
+        """Helper for .has()"""
+        def _ncsplit(expr):
+            # this is not the same as args_cnc because here
+            # we don't assume expr is a Mul -- hence deal with args --
+            # and always return a set.
+            cpart, ncpart = sift(expr.args,
+                lambda arg: arg.is_commutative is True, binary=True)
+            return set(cpart), ncpart
 
-class And(AssocOp, BooleanFunction):
+        c, nc = _ncsplit(self)
+        cls = self.__class__
+
+        def is_in(expr):
+            if expr == self:
+                return True
+            elif not isinstance(expr, Basic):
+                return False
+            elif isinstance(expr, cls):
+                _c, _nc = _ncsplit(expr)
+                if (c & _c) == c:
+                    if not nc:
+                        return True
+                    elif len(nc) <= len(_nc):
+                        set_nc = frozenset(nc)
+                        if frozenset(_nc).intersection(set_nc) == set_nc:
+                            return True
+            return False
+        return is_in
+
+class And(BoolAssocOp, BooleanFunction):
     """
     Logical AND function.
 
@@ -731,7 +787,7 @@ class And(AssocOp, BooleanFunction):
         return self
 
 
-class Or(AssocOp, BooleanFunction):
+class Or(BoolAssocOp, BooleanFunction):
     """
     Logical OR function
 
@@ -776,7 +832,7 @@ class Or(AssocOp, BooleanFunction):
                     return [S.true]
                 rel.append(c)
             newargs.append(x)
-        return AssocOp._new_args_filter(newargs, Or)
+        return BoolAssocOp._new_args_filter(newargs, Or)
 
     def _eval_subs(self, old, new):
         args = []
