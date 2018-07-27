@@ -944,8 +944,8 @@ class Not(BooleanFunction):
 
     @classmethod
     def eval(cls, arg):
-        if isinstance(arg, Number) or arg in (True, False):
-            return false if arg else true
+        # if isinstance(arg, Number) or arg in (True, False):
+        #     return false if arg else true
         # if arg.is_Not:
         #     return arg.args[0]
         # Simplify Relational objects.
