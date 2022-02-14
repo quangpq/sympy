@@ -303,7 +303,7 @@ class PrettyPrinter(Printer):
 
     def _print_Equivalent(self, e, altchar=None):
         if self._use_unicode:
-            return self.__print_Boolean(e, altchar or "\N{LEFT RIGHT DOUBLE ARROW}")
+            return self.__print_Boolean(e, altchar or u"\N{LEFT RIGHT ARROW}")
         else:
             return self._print_Function(e, sort=True)
 
