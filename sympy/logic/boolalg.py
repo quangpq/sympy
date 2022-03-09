@@ -484,7 +484,7 @@ class BooleanFunction(Application, Boolean):
     def __hash__(self):
         h = self._mhash
         if h is None:
-            if self.func is Implies:
+            if self.func is Implies or self.func is Equivalent:
                 h = hash((type(self).__name__,) + self._hashable_content())
             else:
                 h = hash((type(self).__name__, self._func_hashable_content()))
@@ -501,7 +501,7 @@ class BooleanFunction(Application, Boolean):
         if self is other:
             return True
 
-        if self.func is Implies:
+        if self.func is Implies or self.func is Equivalent:
             return self.args == other.args
 
         return self.args.__len__() == other.args.__len__() and set(self.args) == set(other.args)
